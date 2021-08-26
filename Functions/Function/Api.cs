@@ -207,5 +207,30 @@ namespace Functions.Function
             });
         }
 
+
+        [FunctionName(nameof(GetAllConsolidatedforDate))]
+        public static async Task<IActionResult> GetAllConsolidatedforDate(
+          [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "consolidated")] HttpRequest req,
+          [Table("consolidated", Connection = "AzureWebJobsStorage")] CloudTable cloudTable,
+          ILogger log)
+
+        {
+            log.LogInformation("Get all consolidated received.");
+
+            TableQuery<ConsolidatedEntity> query = new TableQuery<ConsolidatedEntity>();
+            TableQuerySegment<ConsolidatedEntity> employees = await cloudTable.ExecuteQuerySegmentedAsync(query, null);
+
+            string message = "Retrieved all consolidatedEntity";
+            log.LogInformation(message);
+
+
+            return new OkObjectResult(new Response
+            {
+                IsSuccess = true,
+                Message = message,
+                Result = employees
+            });
+        }
+
     }
 }
