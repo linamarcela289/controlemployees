@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Functions.Function
 {
-  public  class ScheduledFunctionTest
+  public  class ScheduledFunction
     {
         private static CloudTable _cloudTable;
 
@@ -22,7 +22,7 @@ namespace Functions.Function
           [Table("consolidated", Connection = "AzureWebJobsStorage")] CloudTable consolidateTable,
           ILogger log)
         {
-            _cloudTable = cloudTable;
+           // _cloudTable = cloudTable;
             log.LogInformation($"Deling completed function executed at: {DateTime.Now}");
             string filter = TableQuery.GenerateFilterConditionForBool("Consolidated", QueryComparisons.Equal, false);
             TableQuery<EmployeeEntity> query = new TableQuery<EmployeeEntity>().Where(filter);
@@ -37,7 +37,8 @@ namespace Functions.Function
                 e.IdEmployee == itemEntry.IdEmployee && !e.Consolidated);
                 if (itemOutput != null)
                 {
-                    TimeSpan difference = itemOutput.Date - itemEntry.Date;
+                    TimeSpan difference =itemOutput.Date - itemEntry.Date;
+
                     ConsolidatedEntity consolidatedEntity = new ConsolidatedEntity
                     {
                         Date = DateTime.UtcNow,
@@ -45,7 +46,7 @@ namespace Functions.Function
                         IdEmployee = itemEntry.IdEmployee,
                         PartitionKey = "CONSOLIDATED",
                         RowKey = Guid.NewGuid().ToString(),
-                        WorkTime = difference,
+                        WorkTime = Convert.ToInt32(difference.TotalMinutes),
                     };
 
                     TableOperation addOperation = TableOperation.Insert(consolidatedEntity);

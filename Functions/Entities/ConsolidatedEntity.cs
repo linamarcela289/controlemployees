@@ -9,6 +9,6 @@ namespace Functions.Entities
 
         public DateTime Date { get; set; }
 
-        public TimeSpan WorkTime { get; set; }
+        public int WorkTime { get; set; }
     }
 }

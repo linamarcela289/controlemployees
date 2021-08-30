@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Common.Models;
+using Functions.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -10,39 +12,40 @@ namespace Test.Helpers
 {
     public class TestFactory
     {
-        public static TodoEntity GetTodoEntity()
+        public static EmployeeEntity GetEmployeeEntity()
         {
-            return new TodoEntity
+            return new EmployeeEntity
             {
+                Consolidated = false,
+                Date = DateTime.UtcNow,
+                IdEmployee = 200,
                 ETag = "*",
-                PartitionKey = "TODO",
+                PartitionKey = "EMPLOYEE",
                 RowKey = Guid.NewGuid().ToString(),
-                CreatedTime = DateTime.Now,
-                IsCompleted = false,
-                TaskDescription = "Taks: Kill the humans."
+                Type = 0
             };
         }
 
-        public static DefaultHttpRequest CreateHttpRequest(Guid todoId, Todo todoRequest)
+        public static DefaultHttpRequest CreateHttpRequest(Guid employeeId, Employee employeeRequest)
         {
-            string request = JsonConvert.SerializeObject(todoRequest);
+            string request = JsonConvert.SerializeObject(employeeRequest);
             return new DefaultHttpRequest(new DefaultHttpContext())
             {
                 Body = GenerateStreamFromString(request),
-                Path = $"/{todoId}"
+                Path = $"/{employeeId}"
             };
         }
-        public static DefaultHttpRequest DeleteHttpRequest(Guid todoId)
+        public static DefaultHttpRequest DeleteHttpRequest(Guid employeeId)
         {
             return new DefaultHttpRequest(new DefaultHttpContext())
             {
-                Path = $"/{todoId}"
+                Path = $"/{employeeId}"
             };
         }
 
-        public static DefaultHttpRequest CreateHttpRequest(Todo todoRequest)
+        public static DefaultHttpRequest CreateHttpRequest(Employee employeeRequest)
         {
-            string request = JsonConvert.SerializeObject(todoRequest);
+            string request = JsonConvert.SerializeObject(employeeRequest);
             return new DefaultHttpRequest(new DefaultHttpContext())
             {
                 Body = GenerateStreamFromString(request)
@@ -54,15 +57,18 @@ namespace Test.Helpers
             return new DefaultHttpRequest(new DefaultHttpContext());
         }
 
-        public static Todo GetTodoRequest()
+        public static Employee GetEmployeeRequest()
         {
-            return new Todo
+            return new Employee
             {
-                CreatedTime = DateTime.UtcNow,
-                IsCompleted = false,
-                TaskDescription = "Try to conquer the world."
+                IdEmployee = 90,
+                Consolidated = false,
+                Type = 0,
+                Date = DateTime.UtcNow
+
             };
         }
+
         public static Stream GenerateStreamFromString(string stringToConvert)
         {
             MemoryStream stream = new MemoryStream();
@@ -88,6 +94,16 @@ namespace Test.Helpers
 
             return logger;
         }
+
+        public static DefaultHttpRequest GetAllHttpRequestId(Guid employeeId)
+        {
+            return new DefaultHttpRequest(new DefaultHttpContext())
+            {
+                Path = $"/{employeeId}"
+            };
+        }
     }
+
+
 }
 

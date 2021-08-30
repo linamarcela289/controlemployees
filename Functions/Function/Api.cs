@@ -42,8 +42,9 @@ namespace Functions.Function
 
             EmployeeEntity employeeEntity = new EmployeeEntity
             {
+                
                 Consolidated = false,
-                Date = DateTime.UtcNow,
+                Date = employee.Date.Value,
                 IdEmployee = employee.IdEmployee,
                 ETag = "*",
                 PartitionKey = "EMPLOYEE",
@@ -210,13 +211,15 @@ namespace Functions.Function
 
         [FunctionName(nameof(GetAllConsolidatedforDate))]
         public static async Task<IActionResult> GetAllConsolidatedforDate(
-          [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "consolidated")] HttpRequest req,
+          [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "consolidated/{date}")] HttpRequest req,
           [Table("consolidated", Connection = "AzureWebJobsStorage")] CloudTable cloudTable,
+          [Table("consolidated", "CONSOLIDATED", "{date}")] ConsolidatedEntity consolidatedEntity,
+          DateTime date,
           ILogger log)
 
         {
             log.LogInformation("Get all consolidated received.");
-
+            string filter = TableQuery.GenerateFilterConditionForDate("Date", QueryComparisons.Equal, date);
             TableQuery<ConsolidatedEntity> query = new TableQuery<ConsolidatedEntity>();
             TableQuerySegment<ConsolidatedEntity> employees = await cloudTable.ExecuteQuerySegmentedAsync(query, null);
 
@@ -234,3 +237,6 @@ namespace Functions.Function
 
     }
 }
+
+
+
