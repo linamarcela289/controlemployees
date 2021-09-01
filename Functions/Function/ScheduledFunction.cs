@@ -15,14 +15,15 @@ namespace Functions.Function
     {
         private static CloudTable _cloudTable;
 
+        
         [FunctionName("ScheduledFunction")]
         public static async Task Run(
-          [TimerTrigger("0 * * * * *")] TimerInfo myTimer,
+          [TimerTrigger("0 * * * *")] TimerInfo myTimer,
           [Table("employee", Connection = "AzureWebJobsStorage")] CloudTable cloudTable,
           [Table("consolidated", Connection = "AzureWebJobsStorage")] CloudTable consolidateTable,
           ILogger log)
         {
-           // _cloudTable = cloudTable;
+           _cloudTable = cloudTable;
             log.LogInformation($"Deling completed function executed at: {DateTime.Now}");
             string filter = TableQuery.GenerateFilterConditionForBool("Consolidated", QueryComparisons.Equal, false);
             TableQuery<EmployeeEntity> query = new TableQuery<EmployeeEntity>().Where(filter);
@@ -30,6 +31,7 @@ namespace Functions.Function
 
             List<EmployeeEntity> entryEmployees = employees.ToList().Where(e => e.Type == (int)TypeEnum.Entry).ToList();
             List<EmployeeEntity> outputEmployees = employees.ToList().Where(e => e.Type == (int)TypeEnum.Output).ToList();
+            List<ConsolidatedEntity> consolidatedEntities = new List<ConsolidatedEntity>();
 
             foreach (EmployeeEntity itemEntry in entryEmployees)
             {
@@ -41,17 +43,17 @@ namespace Functions.Function
 
                     ConsolidatedEntity consolidatedEntity = new ConsolidatedEntity
                     {
-                        Date = DateTime.UtcNow,
+                        Date = DateTime.Today,
                         ETag = "*",
                         IdEmployee = itemEntry.IdEmployee,
                         PartitionKey = "CONSOLIDATED",
                         RowKey = Guid.NewGuid().ToString(),
                         WorkTime = Convert.ToInt32(difference.TotalMinutes),
                     };
-
-                    TableOperation addOperation = TableOperation.Insert(consolidatedEntity);
-                    await consolidateTable.ExecuteAsync(addOperation);
-                    log.LogInformation($"Insert Consolidate: {itemOutput.IdEmployee} item at: {DateTime.Now}");
+                    consolidatedEntities.Add(consolidatedEntity);
+                    //TableOperation addOperation = TableOperation.Insert(consolidatedEntity);
+                    //await consolidateTable.ExecuteAsync(addOperation);
+                    //log.LogInformation($"Insert Consolidate: {itemOutput.IdEmployee} item at: {DateTime.Now}");
 
                     itemOutput.Consolidated = true;
                     itemEntry.Consolidated = true;
@@ -61,7 +63,6 @@ namespace Functions.Function
                 }
             }
         }
-
         private static async Task UpdateEmployee(EmployeeEntity itemOutput)
         {
             TableOperation addOperation = TableOperation.Replace(itemOutput);

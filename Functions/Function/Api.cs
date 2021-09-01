@@ -220,10 +220,10 @@ namespace Functions.Function
         {
             log.LogInformation("Get all consolidated received.");
             string filter = TableQuery.GenerateFilterConditionForDate("Date", QueryComparisons.Equal, date);
-            TableQuery<ConsolidatedEntity> query = new TableQuery<ConsolidatedEntity>();
-            TableQuerySegment<ConsolidatedEntity> employees = await cloudTable.ExecuteQuerySegmentedAsync(query, null);
+            TableQuery<ConsolidatedEntity> query = new TableQuery<ConsolidatedEntity>().Where(filter);
+            TableQuerySegment<ConsolidatedEntity> consolidateds = await cloudTable.ExecuteQuerySegmentedAsync(query, null);
 
-            string message = "Retrieved all consolidatedEntity";
+            string message = $"Retrieved all consolidatedEntity";
             log.LogInformation(message);
 
 
@@ -231,7 +231,7 @@ namespace Functions.Function
             {
                 IsSuccess = true,
                 Message = message,
-                Result = employees
+                Result = consolidateds
             });
         }
 

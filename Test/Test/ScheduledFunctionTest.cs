@@ -14,6 +14,9 @@ namespace Test.Test
     public class ScheduledFunctionTest
     {
         private readonly ILogger logger = TestFactory.CreateLogger();
+
+
+      [Fact]
         public void ScheduledFunctionTest_Should_Log_Messaga()
         {
 
@@ -22,7 +25,7 @@ namespace Test.Test
             MockCloudTable mockTodos2 = new MockCloudTable(new Uri("http://127.0.0.1:10002/devstoreaccount1/reports"));
             ListLogger logger = (ListLogger)TestFactory.CreateLogger(LoggerTypes.List);
             // Act
-            //ScheduledFunction.Run(null, mockTodos,mockTodos2 logger);
+            ScheduledFunction.Run(null, mockTodos,mockTodos2, logger);
             string message = logger.Logs[0];
 
             // Assert

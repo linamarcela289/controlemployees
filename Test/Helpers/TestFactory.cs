@@ -26,6 +26,22 @@ namespace Test.Helpers
             };
         }
 
+        public static ConsolidatedEntity GetConsolidatedEntity()
+        {
+            return new ConsolidatedEntity
+            {
+
+                Date = DateTime.Today,
+                IdEmployee = 200,
+                ETag = "*",
+                PartitionKey = "CONSOLIDATED",
+                RowKey = Guid.NewGuid().ToString(),
+                WorkTime = 5
+                
+            };
+        }
+
+
         public static DefaultHttpRequest CreateHttpRequest(Guid employeeId, Employee employeeRequest)
         {
             string request = JsonConvert.SerializeObject(employeeRequest);
@@ -57,18 +73,6 @@ namespace Test.Helpers
             return new DefaultHttpRequest(new DefaultHttpContext());
         }
 
-        public static Employee GetEmployeeRequest()
-        {
-            return new Employee
-            {
-                IdEmployee = 90,
-                Consolidated = false,
-                Type = 0,
-                Date = DateTime.UtcNow
-
-            };
-        }
-
         public static Stream GenerateStreamFromString(string stringToConvert)
         {
             MemoryStream stream = new MemoryStream();
@@ -95,11 +99,32 @@ namespace Test.Helpers
             return logger;
         }
 
-        public static DefaultHttpRequest GetAllHttpRequestId(Guid employeeId)
+        public static DefaultHttpRequest GetConsolidateddRequestDate(DateTime date)
+        {
+            return new DefaultHttpRequest(new DefaultHttpContext())
+            {
+                Path = $"/{date}"
+            };
+        }
+
+        public static DefaultHttpRequest GetEmployeeHttpRequestId(Guid employeeId)
         {
             return new DefaultHttpRequest(new DefaultHttpContext())
             {
                 Path = $"/{employeeId}"
+            };
+        }
+
+       
+        public static Employee GetEmployeeRequest()
+        {
+            return new Employee
+            {
+                IdEmployee = 90,
+                Consolidated = false,
+                Type = 0,
+                Date = DateTime.UtcNow
+
             };
         }
     }
