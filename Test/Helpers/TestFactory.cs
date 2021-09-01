@@ -31,13 +31,13 @@ namespace Test.Helpers
             return new ConsolidatedEntity
             {
 
-                Date = DateTime.Today,
-                IdEmployee = 200,
+                Date = DateTime.UtcNow,
+                IdEmployee = 30,
                 ETag = "*",
                 PartitionKey = "CONSOLIDATED",
                 RowKey = Guid.NewGuid().ToString(),
                 WorkTime = 5
-                
+
             };
         }
 
@@ -115,15 +115,23 @@ namespace Test.Helpers
             };
         }
 
-       
         public static Employee GetEmployeeRequest()
         {
             return new Employee
             {
-                IdEmployee = 90,
+                IdEmployee = 30,
                 Consolidated = false,
                 Type = 0,
                 Date = DateTime.UtcNow
+
+            };
+        }
+
+        public static DefaultHttpRequest GetAllHttpRequest()
+        {
+            return new DefaultHttpRequest(new DefaultHttpContext())
+            {
+                Path ="/"
 
             };
         }

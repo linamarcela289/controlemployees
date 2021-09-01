@@ -16,16 +16,15 @@ namespace Functions.Function
 {
     public class Api
     {
+
+
         [FunctionName(nameof(CreateEntryOrOutputEmployee))]
         public static async Task<IActionResult> CreateEntryOrOutputEmployee(
            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "employee")] HttpRequest req,
            [Table("employee", Connection = "AzureWebJobsStorage")] CloudTable cloudTable,
            ILogger log)
-
         {
             log.LogInformation("Recived new employee");
-
-
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             Employee employee = JsonConvert.DeserializeObject<Employee>(requestBody);
 
@@ -39,10 +38,9 @@ namespace Functions.Function
                 });
             }
 
-
             EmployeeEntity employeeEntity = new EmployeeEntity
             {
-                
+
                 Consolidated = false,
                 Date = employee.Date.Value,
                 IdEmployee = employee.IdEmployee,
@@ -72,7 +70,6 @@ namespace Functions.Function
           [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "employee")] HttpRequest req,
           [Table("employee", Connection = "AzureWebJobsStorage")] CloudTable cloudTable,
           ILogger log)
-
         {
             log.LogInformation("Get all employee received.");
 
@@ -81,7 +78,6 @@ namespace Functions.Function
 
             string message = "Retrieved all employee";
             log.LogInformation(message);
-
 
             return new OkObjectResult(new Response
             {
@@ -147,7 +143,7 @@ namespace Functions.Function
                 });
             }
 
-            //Update employee
+
             EmployeeEntity employeeEntity = (EmployeeEntity)findResult.Result;
             employeeEntity.Type = (int)employee.Type;
             if (employee.Date.HasValue)
@@ -181,8 +177,6 @@ namespace Functions.Function
          [Table("employee", "EMPLOYEE", "{id}")] EmployeeEntity employeeEntity,
          string id,
          ILogger log)
-
-
         {
             log.LogInformation($"Get employee by id: {id}, received.");
 
@@ -199,7 +193,6 @@ namespace Functions.Function
             string message = $"Employeer: {employeeEntity.RowKey}, retrieved";
             log.LogInformation(message);
 
-
             return new OkObjectResult(new Response
             {
                 IsSuccess = true,
@@ -207,7 +200,6 @@ namespace Functions.Function
                 Result = employeeEntity
             });
         }
-
 
         [FunctionName(nameof(GetAllConsolidatedforDate))]
         public static async Task<IActionResult> GetAllConsolidatedforDate(
@@ -225,7 +217,6 @@ namespace Functions.Function
 
             string message = $"Retrieved all consolidatedEntity";
             log.LogInformation(message);
-
 
             return new OkObjectResult(new Response
             {

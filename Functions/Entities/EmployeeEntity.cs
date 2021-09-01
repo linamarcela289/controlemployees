@@ -1,5 +1,4 @@
-﻿using Common.Enums;
-using Microsoft.WindowsAzure.Storage.Table;
+﻿using Microsoft.WindowsAzure.Storage.Table;
 using System;
 
 namespace Functions.Entities
